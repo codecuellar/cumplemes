@@ -372,6 +372,19 @@
 
 <canvas id="particles"></canvas>
 
+<!-- PANTALLA DE TRANSICIÓN -->
+<div id="transicionPage" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#1a0812; z-index:9; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center;">
+  <p style="font-family:'Playfair Display',serif; font-style:italic; color:var(--rosa-claro); font-size:clamp(1.1rem,4vw,1.5rem); line-height:1.8; max-width:480px; margin-bottom:50px; opacity:0; transition: opacity 1s ease;" id="transicionTexto">
+    Hice esto para vos porque quería estar presente de alguna manera en este día tan especial, aunque sea a través de la pantalla... ¿me regalás unos segundos? 🤍
+  </p>
+  <div style="display:flex; gap:16px;" id="transicionContador">
+    <span id="cnt3" style="font-size:4rem; opacity:0.2; transition: opacity 0.3s, transform 0.3s; transform:scale(0.8);">3</span>
+    <span id="cnt2" style="font-size:4rem; opacity:0.2; transition: opacity 0.3s, transform 0.3s; transform:scale(0.8);">2</span>
+    <span id="cnt1" style="font-size:4rem; opacity:0.2; transition: opacity 0.3s, transform 0.3s; transform:scale(0.8);">1</span>
+  </div>
+  <p style="color:rgba(255,255,255,0.3); font-size:0.85rem; margin-top:40px; letter-spacing:2px;" id="transicionSub">preparando algo especial...</p>
+</div>
+
 <!-- PÁGINA PRINCIPAL -->
 <div id="mainPage">
   <p class="titulo-top">✦ 1 mes juntos ✦</p>
@@ -390,7 +403,7 @@
 </div>
 
   <div class="botones-wrap">
-    <button id="btnSi" class="btn">¡Sí, siempre! 💖</button>
+    <button id="btnSi" class="btn" style="position:relative; z-index:10;">¡Sí, siempre! 💖</button>
     <button id="btnNo" class="btn">No... 😤</button>
   </div>
 </div>
@@ -457,6 +470,25 @@
     <span class="cierre-corazon">❤️</span>
     <p class="cierre-texto">Feliz primer mes,<br>mi amor 🌸</p>
     <p class="cierre-firma">— Tu Agus</p>
+  </div>
+
+    <!-- MENSAJE FINAL -->
+  <div class="cierre-sobre-wrap" style="text-align:center; padding: 20px 24px 100px;">
+    <p style="font-family:'Playfair Display',serif; color:var(--dorado); font-size:1rem; letter-spacing:2px; margin-bottom:20px;">✦ algo más para vos ✦</p>
+    <div id="sobreBtn" onclick="abrirSobre()" style="font-size:4rem; cursor:pointer; animation: latido 1.4s ease-in-out infinite; display:inline-block; filter: drop-shadow(0 0 15px rgba(212,168,67,0.6));">✉️</div>
+    <p style="color:rgba(255,255,255,0.35); font-size:0.8rem; margin-top:12px; letter-spacing:1px;">tocá para abrir</p>
+
+    <div id="sobreMensaje" style="display:none; max-width:500px; margin: 40px auto 0; opacity:0; transition: opacity 1.2s ease;">
+      <div style="border: 1px solid rgba(232,84,122,0.3); border-radius:20px; padding:32px 24px; background:rgba(232,84,122,0.06); backdrop-filter:blur(10px);">
+        <span style="font-size:2rem; display:block; margin-bottom:20px;">🤍</span>
+        <p style="font-family:'Playfair Display',serif; font-style:italic; color:#fff; font-size:clamp(0.95rem,3vw,1.15rem); line-height:1.9; text-align:left;">
+          Si llegaste hasta acá, entonces sabés un poco más lo importante que sos para mí. Cada foto, cada momento y cada detalle de esta página está acá por una razón: <span style="color:var(--rosa);">vos</span>. Porque desde que estás en mi vida, todo se siente distinto, más lindo, más real.<br><br>
+          No sé si existe una forma perfecta de decir lo que siento, pero sí sé que lo que siento es de verdad.<br><br>
+          Si algún día dudás de cuánto significás para mí, por favor, volvé a este momento, a esta página... porque una partecita de mi corazón la dejé guardada para vos. 🤍
+        </p>
+        <p style="font-family:'Playfair Display',serif; font-style:italic; color:var(--rosa); font-size:1.1rem; margin-top:24px; text-align:right;">— Tu Agus</p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -533,6 +565,7 @@
     noY = rect.top;
     btnNo.style.left = noX + 'px';
     btnNo.style.top = noY + 'px';
+    btnNo.style.zIndex = '1';
   }
 
   setTimeout(initBtnNo, 1800);
@@ -562,13 +595,8 @@
   const musica = document.getElementById('musica');
 
   btnSi.addEventListener('click', () => {
-    mainPage.style.display = 'none';
-    siPage.style.display = 'block';
-    siPage.scrollTo(0, 0);
-    musica.play().catch(() => {});
-
-    // Activar scroll observer para animaciones de galería
-    setTimeout(setupObserver, 100);
+        document.getElementById('mainPage').style.display = 'none';
+        mostrarTransicion();
   });
 
   // ===== SCROLL OBSERVER PARA GALERÍA =====
@@ -586,7 +614,59 @@
       c.style.transitionDelay = `${i * 0.1}s`;
       obs.observe(c);
     });
+    
   }
+
+      // ===== TRANSICIÓN ANTES DE GALERÍA =====
+    function mostrarTransicion() {
+      const t = document.getElementById('transicionPage');
+      t.style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('transicionTexto').style.opacity = '1';
+        }, 300);
+
+        const nums = ['cnt3','cnt2','cnt1'];
+        nums.forEach((id, i) => {
+          setTimeout(() => {
+            const el = document.getElementById(id);
+            el.style.opacity = '1';
+            el.style.transform = 'scale(1.2)';
+            el.style.color = 'var(--rosa)';
+            setTimeout(() => { el.style.transform = 'scale(1)'; }, 200);
+          }, 2000 + i * 900);
+        });
+
+        setTimeout(() => {
+          t.style.opacity = '0';
+          t.style.transition = 'opacity 0.8s ease';
+          setTimeout(() => {
+            // Primero ocultamos la página principal y mostramos la galería
+            document.getElementById('mainPage').style.display = 'none'; // <--- MOVER ESTO PRIMERO
+            const sp = document.getElementById('siPage');
+            sp.style.display = 'block';
+            sp.scrollTo(0, 0);
+            
+            // Recién después ocultamos la transición
+            t.style.display = 'none';
+            t.style.opacity = '';
+            
+            document.getElementById('musica').play().catch(() => {});
+            setTimeout(setupObserver, 100);
+          }, 800);
+      }, 5200);
+    }
+          // ===== SOBRE =====
+      function abrirSobre() {
+        const btn = document.getElementById('sobreBtn');
+        const msg = document.getElementById('sobreMensaje');
+        btn.style.display = 'none';
+        document.querySelector('.cierre-sobre-wrap p:last-of-type') && 
+          (document.querySelector('#sobreBtn + p').style.display = 'none');
+        msg.style.display = 'block';
+        setTimeout(() => { msg.style.opacity = '1'; }, 50);
+      }
+
+
 </script>
 </body>
 </html>
