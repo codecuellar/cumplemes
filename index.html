@@ -650,7 +650,29 @@
             t.style.display = 'none';
             t.style.opacity = '';
             
-            document.getElementById('musica').play().catch(() => {});
+            // Configurar fade in para la música
+            const audio = document.getElementById('musica');
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const track = audioCtx.createMediaElementSource(audio);
+            const gainNode = audioCtx.createGain();
+
+            // Conectar: audio -> gainNode -> destino
+            track.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            // Empezar con volumen 0
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+
+            // Reproducir el audio
+            audio.play().then(() => {
+                // Una vez que el audio está reproduciendo, hacer fade in lineal en 2 segundos
+                gainNode.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 2);
+            }).catch(() => {});
+
+            // IMPORTANTE: Reanudar el AudioContext si está suspendido (política de autoplay)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
             setTimeout(setupObserver, 100);
           }, 800);
       }, 5200);
